@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="card m-5">
+    <div class="card-body text-center">
+        <h4>Nuevo post</h4>
+        <small>
+            <i>Recuerda, un post tiene contenido legible, busca la forma de atraer
+            la atenci&oacute;n de tus lectores</i>
+        </small> 
+        <br>
+        <br>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ post_form.section.label }}
+            <p>
+                {{ post_form.section }}
+            </p>
+            {{ post_form.title.label }}
+            <p>
+                {{ post_form.title }}
+            </p>
+            {{ post_form.content.label }}
+            <p>
+                {{ post_form.content }}
+            </p>
+            <label for="post-files">Attachments</label>
+            <p>
+                <input id="post-files" type="file" name="post-files" multiple>
+            </p>
+            <br>
+            {{ post_form.errors }}
+            <br>
+            <input class="btn btn-primary" type="submit" value="Publicar">
+        </form>
+    </div>
+</div>
+{% endblock %}

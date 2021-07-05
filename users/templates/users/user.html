@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body %}
+<div class="text-center p-5">
+    <img class="rounded-circle" src="{{ user.profile_img }}">
+    <div class="m-5">
+        <h4>
+            <b>Username: </b>{{ user.username }}
+        </h4>
+        <h5>
+            <b>Name: </b>{{ user.get_full_name }}
+        </h5>
+        <div class="container">
+            <br>
+            <div class="row">
+                <div class="col-md-3"></div>
+                <div class="col-md-3">
+                    <h5>
+                        <b>Posts: </b>
+                        <br>
+                        {{ user.post_set.get_queryset|length }}
+                    </h5>
+                </div>
+                <div class="col-md-3">
+                    <h5>
+                        <b>Comments: </b>
+                        <br>
+                        {{ user.comment_set.get_queryset|length }}
+                    </h5>
+                </div>
+                <div class="col-md-3"></div>
+            </div>
+        </div>
+    </div>
+    {% if is_owner %}
+        <div class="container">
+            <br>
+            <div class="row">
+                <div class="col-md-3"></div>
+                <div class="col-md-3">
+                    <form action="logout/" method="POST">
+                        {% csrf_token %}
+                        <input class="btn btn-danger" type="submit" id="logout-btn" value="Logout">
+                    </form>
+                </div>
+                <div class="col-md-3">
+                    <a class="btn btn-primary" href="new-post/">New Post</a>
+                </div>
+                <div class="col-md-3"></div>
+            </div>
+        </div>
+        <br>
+    {% endif %}
+</div>
+<script src="{% static 'users/js/user.js' %}" type="text/javascript"></script> 
+{% endblock %}

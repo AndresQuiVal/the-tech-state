@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="text-center p-5">
+    <img src="{{ user.profile_img }}" class="rounded-circle">
+    <div>
+        <br>
+        <b>Welcome {{ user.username }}!</b> just one step more and everything's done
+    </div>
+    <br>
+    <br>
+    <form method="POST" action="">
+        {% csrf_token %}
+        {{ complete_name_form.as_p }}
+        <input class="btn btn-primary" type="submit" value="Start!">
+    </form>
+</div>
+{% endblock %}
