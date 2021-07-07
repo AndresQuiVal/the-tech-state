@@ -90,6 +90,10 @@ class UserHelper:
         """
         if not username:
             raise ValueError("Not 'username' parameter was provided")
-
-        user = User.objects.get(username=username)
+        
+        user = self.exists_in_db(username)
+        if not user:
+            return None
+        
         return user.first_name != '' and user.last_name != ''
+    

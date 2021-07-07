@@ -8,7 +8,27 @@ from .models import UserDiscordModel, User
 from django.urls import reverse
 from .forms import CompleteNameForm, NewPostForm
 from blog.models import File
-import pdb
+
+
+def validate_if_new_user(func): # decorator 
+
+    def wrapper(*args, **kwargs):
+        username = kwargs.get('username', None)
+        if not username:
+            return HttpResponseBadRequest("No username was provided")
+
+        user_helper = UserHelper()
+        not_new = user_helper.has_set_initial_user_info(username)
+        if not_new == None: # user does not exist in database
+            return Http404(f"User with {username} username does not exist")
+        
+        if not_new:
+            return func(*args, **kwargs)
+    
+        return redirect(reverse('users:getting-started', args=(username,)))
+    
+    return wrapper
+
 
 def login_view(request):
     """
@@ -75,6 +95,7 @@ def logout_view(request, username):
     
 
 @require_http_methods(["GET", "POST"])
+@validate_if_new_user
 def new_post(request, username):
     """
     Redirects to the new-post template
@@ -115,9 +136,11 @@ def new_post(request, username):
     context = {
         'post_form' : post_form
     }
+
     return render(request, 'users/new_post.html', context)
 
 
+@validate_if_new_user
 def user_view(request, username): # TODO: validate here the getting_started status of the user!!!
     """
     Redirects to the user view; if the user is the owner, enables edition permissions
@@ -148,6 +171,11 @@ def user_view(request, username): # TODO: validate here the getting_started stat
     return render(request, 'users/user.html', context)
 
 
+@validate_if_new_user
+def posts(request, username):
+    return render(request, 'users/user_posts.html', {})
+
+
 def getting_started_view(request, username):
     """
     Redirects the template getting_started.html if its user's first time
@@ -158,33 +186,25 @@ def getting_started_view(request, username):
 
     if not is_owner_and_logged_in:
         return redirect(reverse('users:user-view', args=(username,)))
-    
-    try:
-        is_not_new = user_helper.has_set_initial_user_info(username)
-    except User.DoesNotExist:
-        return Http404("User with such username does not exist")
-    else:
-        if is_not_new: 
-            return redirect(reverse('users:user-view', args=(username,)))
+
+    user = User.objects.get(username=username)
+    complete_name_form = CompleteNameForm()
+
+    if request.method == 'POST': # form initial information
+        complete_name_form = CompleteNameForm(request.POST)
         
-        user = User.objects.get(username=username)
-        complete_name_form = CompleteNameForm()
+        if complete_name_form.is_valid():
+            user.first_name = complete_name_form.cleaned_data['first_name']
+            user.last_name = complete_name_form.cleaned_data['last_name']
+            user.save()
 
-        if request.method == 'POST': # form initial information
-            complete_name_form = CompleteNameForm(request.POST)
-            
-            if complete_name_form.is_valid():
-                user.first_name = complete_name_form.cleaned_data['first_name']
-                user.last_name = complete_name_form.cleaned_data['last_name']
-                user.save()
-
-                return redirect(reverse('users:user-view', args=(username,)))
+            return redirect(reverse('users:user-view', args=(username,)))
 
 
-        context = {
-            'user' : user,
-            'complete_name_form' : complete_name_form
-        }
+    context = {
+        'user' : user,
+        'complete_name_form' : complete_name_form
+    }
 
-        return render(request, 'users/getting_started.html', context)
+    return render(request, 'users/getting_started.html', context)
     

@@ -1,4 +1,3 @@
-from django.core.validators import MinValueValidator
 from datetime import datetime
 from users.models import User
 from django.db import models
@@ -26,12 +25,8 @@ class Post(models.Model):
         ))
         
     title = models.CharField(max_length=100)
-    content = models.TextField(
-        # validators=[
-        #     MinValueValidator('50', message="The blog should have at least 50 characters")
-        # ]
-    )
-    summary = models.CharField(max_length=500)
+    content = models.TextField(max_length=1000)
+    summary = models.CharField(max_length=50)
     datetime = models.DateTimeField()
     upvotes = models.IntegerField(default=0, blank=True)
     downvotes = models.IntegerField(default=0, blank=True)
@@ -43,6 +38,17 @@ class Post(models.Model):
         """
         self.datetime = datetime.now()
         self.summary = str(self.content)[:50]
+
+
+    def save(self, *args, **kwargs):
+        """
+        Saves the instance to db, but performs extra validation
+        """
+        content_str = str(self.content)
+        if len(content_str) < 50:
+            raise ValueError("Content cannot be of 50 characters")
+
+        super(Post, self).save(*args, **kwargs)
 
 
 class Comment(models.Model):

@@ -1,5 +1,5 @@
-from django import forms
 from blog.models import Post
+from django import forms
 
 
 class CompleteNameForm(forms.Form):
@@ -7,10 +7,13 @@ class CompleteNameForm(forms.Form):
     last_name = forms.CharField(max_length=50)
 
 class NewPostForm(forms.ModelForm):
+    content = forms.CharField(
+        widget=forms.Textarea(attrs={'cols': 80, 'rows': 20, 'minlength' : 50}), 
+    )
+
     class Meta:
         model = Post
         fields = ['section', 'title', 'content']
         widgets = {
-            'title': forms.Textarea(attrs={'cols': 40, 'rows': 2}),
-            'content' : forms.Textarea(attrs={'cols': 80, 'rows': 20}),
+            'title': forms.Textarea(attrs={'cols': 40, 'rows': 2})
         }
