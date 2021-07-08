@@ -1,6 +1,8 @@
+from django.db.models import query
 from django.db.models.fields import files
 from django.views.decorators.http import require_http_methods
 from django.shortcuts import render, redirect
+from django.views import generic
 from django.http import Http404, HttpResponseBadRequest
 from .services import DiscordService
 from .helpers import UserHelper
@@ -8,6 +10,7 @@ from .models import UserDiscordModel, User
 from django.urls import reverse
 from .forms import CompleteNameForm, NewPostForm
 from blog.models import File
+from blog.models import Post
 
 
 def validate_if_new_user(func): # decorator 
@@ -171,10 +174,20 @@ def user_view(request, username): # TODO: validate here the getting_started stat
     return render(request, 'users/user.html', context)
 
 
-@validate_if_new_user
-def posts(request, username):
-    return render(request, 'users/user_posts.html', {})
+class PostsIndex(generic.ListView):
+    """
+    Show the posts in index form
+    """
+    template_name = "users/post_list.html" # by default searches 'blog/post_list.html' beacuse Post model
+                                           # is defined in such application
+    def get_queryset(self):
+        username = self.kwargs.get('username', None)
+        queryset = []
+        if not username:
+            return queryset
 
+        queryset = Post.objects.filter(user__username=username) 
+        return queryset
 
 def getting_started_view(request, username):
     """

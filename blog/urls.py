@@ -1,10 +1,11 @@
 from django.contrib import admin
 from django.urls import path, include
-from .views import index_view 
+from . import views
 
-main_path = path('', index_view, name = 'index-blog-view')
+main_path = path('', views.PostList.as_view(), name = 'index-blog-view')
 
 app_name = 'blog'
 urlpatterns = [
-    path('dashboard/', index_view, name = 'index-blog-view'),
+    path('dashboard/', views.PostList.as_view(), name = 'index-blog-view'),
+    path('posts/<int:pk>', views.PostDetail.as_view(), name = 'post-detail')
 ]
