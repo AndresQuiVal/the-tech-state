@@ -9,7 +9,7 @@
                     <p class="card-text">
                         {{ post.summary }}
                     </p>
-                    <a href="#" class="card-link">See full post</a>
+                    <a href="{% url 'blog:post-detail' post.post_id %}" class="card-link">See full post</a>
                 </div>
             </div>
         {% endfor %}
