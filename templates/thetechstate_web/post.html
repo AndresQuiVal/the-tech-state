@@ -1,0 +1,38 @@
+<div class="card m-2" style="width: 18rem;">
+    <img class="card-img-top" src="/media/{{ post.file_set.get_queryset.0.file.name }}">
+    <div class="card-body">
+        <h5 class="card-title">{{ post.title }}</h5>
+        <small><i>Summary</i></small> 
+        <p class="card-text">
+            {{ post.summary }}
+        </p>
+        <a href="{% url 'blog:post-detail' post.post_id %}" class="card-link">
+            See full post
+        </a>
+        {% if is_owner %}
+            <button id="{{ post.post_id }}" class='btn-post-delete btn btn-danger' href="{% url 'blog:post-delete' post.post_id %}">
+                Delete post
+            </button> 
+        {% endif %}
+        {# is_index means if the template we are using is the index.html #}
+        {% if is_index %}
+            <div>
+                <a>Like</a>
+                <a>Dislike</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+<script>
+    var buttonPostDelete = document.querySelector('.btn-post-delete')
+
+    buttonPostDelete.onclick = function() {
+        let confirmDeletion = window.confirm("Delete post?");
+        if (confirmDeletion) {
+            urlPath = "{% url 'blog:post-delete' 1 %}"; // since we cannnot configure the url previously
+                                                        // we replace the pk with the post one
+            urlPath = urlPath.replace('1', buttonPostDelete.id);
+            window.location.href = urlConf;
+        }
+    }
+</script>

@@ -1,6 +1,16 @@
 {% extends 'base.html' %}
 
 {% block body %}
-    {% include 'posts.html' %}
+    <div class="d-flex flex-wrap justify-content-center">
+        {% if post_list %}
+            {% for post in post_list %}
+                {% include 'post.html' with is_index=True %}
+            {% endfor %}
+        {% else %}
+            <div>
+                <h5>No hay posts aun, feed actualizado</h5>
+            </div>
+        {% endif %}
+    </div>
 {% endblock %}
 
