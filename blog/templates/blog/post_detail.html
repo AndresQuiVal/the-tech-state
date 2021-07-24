@@ -1,7 +1,45 @@
 {% extends 'base.html' %}
 
 {% block body %}
-    <span>
-        el t&iacute;tulo de tu post es {{ post.title }}
-    </span>
+    <div class="card m-5 d-flex justify-content-center">
+        <div class="container p-5">
+            <div class="row">
+                <div class="col-md-3">
+                    <a>Comment</a>
+                </div>
+                <div class="col-md-6 shadow-lg rounded">
+                    <img class="h-100 w-100 rounded" src="https://applesencia.com/files/2014/10/Steve-Jobs-1955-2011-640x480.jpg" alt="Thumbnail" class="img-thumbnail">
+                </div>
+                <div class="col-md-3">
+                    <a>Upvote</a>
+                    <a>Downvote</a> 
+                </div>
+            </div>
+            <br>
+            <br>
+            <h2 class="text-center">
+                Post title
+            </h2>
+            <br>
+            <div class="card m-2 p-3">
+                <p>
+                    Hasta ese instante, no había existido apoyo económico por parte de los laboratorios Bell, pero eso cambió cuando el Grupo de Investigación en Ciencias de la Computación decidió utilizar UNIX en una máquina superior a la PDP-7. Thompson y Ritchie lograron cumplir con la solicitud de agregar herramientas que permitieran el procesamiento de textos a UNIX en una máquina PDP-11/20, y como consecuencia de ello consiguieron el apoyo económico de los laboratorios Bell. Fue así como por vez primera, en 1970, se habla oficialmente del sistema operativo UNIX11​ ejecutado en una PDP-11/20. Se incluía en él un programa para dar formato a textos (runoff) y un editor de texto. Tanto el sistema operativo como los programas fueron escritos en el lenguaje ensamblador de la PDP-11/20. Este "sistema de procesamiento de texto" inicial, compuesto tanto por el sistema operativo como de runoff y el editor de texto, fue utilizado en los laboratorios Bell para procesar las solicitudes de patentes que ellos recibían. Pronto, runoff fue mejorado hasta convertirse en troff, el primer programa de edición electrónica que permitía realizar composición tipográfica. El 3 de noviembre de 1971 Thomson y Ritchie publicaron un manual de programación de UNIX (título original en inglés: "UNIX Programmer's Manual")
+                </p>
+            </div>
+            <br>
+            <h4>
+                Attachments
+            </h4>
+            <div class="d-flex flex-wrap">
+                <!--For every attachment, create a rounded card with image inside, if user clicks
+                    then show the image in full-screen size-->
+                    <div class="card w-25 m-2 shadow">
+                        <img class="rounded" src="https://estaticos.muyinteresante.es/media/cache/760x570_thumb/uploads/images/article/5536592a70a1ae8d775df6a3/portada.jpg">
+                    </div>
+                    <div class="card w-25 m-2 shadow">
+                        <img class="rounded h-100 w-100" src="https://i.blogs.es/f7b0ed/steve-jobs/1366_2000.jpg">
+                    </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
