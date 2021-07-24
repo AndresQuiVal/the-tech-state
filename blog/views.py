@@ -10,6 +10,7 @@ class PostList(generic.ListView):
 
     def get_context_data(self, **kwargs):
         context = super(PostList, self).get_context_data(**kwargs)
+        context['username'] = self.request.session.get('username', None)
         # add username context variable
         return context
 

@@ -21,14 +21,14 @@ class UserHelper:
         if not request:
             raise ValueError('No "request" was passed trough')
         
-        if not 'access_token' in request.COOKIES:
+        if not request.session.has_key('access_token'):
             return False
         
-        access_token = request.COOKIES['access_token'] 
+        access_token = request.session['access_token'] 
         user_obj = self.discord_service.get_current_user(access_token) 
 
         if not user_obj: # TODO: refresh expired access tokens
-            request.delete_cookie('access_token')
+            request.session.flush()
             return False
         
         if not 'id' in user_obj: # Does response dict returns another info if couldn't get the user correcty? for ensurance 

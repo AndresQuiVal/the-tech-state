@@ -1,5 +1,5 @@
 <div class="card m-2" style="width: 18rem;">
-    <img class="card-img-top" src="/media/{{ post.file_set.get_queryset.0.file.name }}">
+    <img class="card-img-top" alt="No attachments" src="/media/{{ post.file_set.get_queryset.0.file.name }}">
     <div class="card-body">
         <h5 class="card-title">{{ post.title }}</h5>
         <small><i>Summary</i></small> 
@@ -16,9 +16,13 @@
         {% endif %}
         {# is_index means if the template we are using is the index.html #}
         {% if is_index %}
-            <div>
-                <a>Like</a>
-                <a>Dislike</a>
+            <br>
+            <br>
+            <div class="container">
+                <div class="col-md-3"></div>
+                <a class="col-md-3">Upvote</a>
+                <a class="col-md-3">Downvote</a>
+                <div class="col-md-3"></div>
             </div>
         {% endif %}
     </div>
@@ -32,7 +36,7 @@
             urlPath = "{% url 'blog:post-delete' 1 %}"; // since we cannnot configure the url previously
                                                         // we replace the pk with the post one
             urlPath = urlPath.replace('1', buttonPostDelete.id);
-            window.location.href = urlConf;
+            window.location.href = urlPath;
         }
     }
 </script>

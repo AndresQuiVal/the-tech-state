@@ -59,8 +59,8 @@ def login_view(request):
     if not response_token:
         return default_login_response
     
-    auth_code = response_token.get('access_token', None)
-    user_obj = discord_service.get_current_user(auth_code)
+    access_token = response_token.get('access_token', None)
+    user_obj = discord_service.get_current_user(access_token)
 
     if not user_obj:
         return default_login_response
@@ -71,7 +71,9 @@ def login_view(request):
     user_helper.insert_to_db_if_not_exists(user_discord_model)
     
     redirection = redirect(reverse('users:user-view', args=(user_discord_model.complete_username,)))
-    redirection.set_cookie('access_token', auth_code)
+    
+    request.session['access_token'] = access_token
+    request.session['username'] = user_discord_model.complete_username
 
     return redirection
 
@@ -87,14 +89,12 @@ def logout_view(request, username):
                                                                      # that's why is validated
 
     if not user_obj:
-        raise HttpResponseBadRequest('You dont have access to log out this user!')
+        raise HttpResponseBadRequest('You dont have access to log out this user!') # or they are not logged in
     
-    response = redirect(reverse('users:login'))
-    response.delete_cookie('access_token')
-
     # TODO: do more logout and session stuff...
+    request.session.flush()
 
-    return response
+    return redirect(reverse('users:login'))
     
 
 @require_http_methods(["GET", "POST"])
@@ -151,7 +151,7 @@ def user_view(request, username): # TODO: validate here the getting_started stat
     """
 
     if not username:
-        raise HttpResponseBadRequest('The url given is not correct') # TODO: index of users view would be nice!
+        raise HttpResponseBadRequest('The url given is not correct')
 
     user_helper = UserHelper()
     user_model = user_helper.exists_in_db(username)
