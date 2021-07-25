@@ -1,4 +1,6 @@
 from datetime import datetime
+
+from django.db.models.fields import related
 from users.models import User
 from django.db import models
 import uuid
@@ -69,9 +71,9 @@ class Comment(models.Model):
 
 class File(models.Model):
     post = models.ForeignKey(
-        Post, on_delete=models.CASCADE,
+        Post, on_delete=models.CASCADE, related_name="attachments",
         blank=True, null=True)
     comment = models.ForeignKey(
-        Comment, on_delete=models.CASCADE,
+        Comment, on_delete=models.CASCADE, related_name="attachments",
         blank=True, null=True)
     file = models.FileField(upload_to=upload_to)
