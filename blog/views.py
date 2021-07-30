@@ -1,8 +1,10 @@
-from django.http.response import Http404
 from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse
+from django.views.decorators.http import require_http_methods
+from django.http.response import Http404, HttpResponseBadRequest
 from django.views import generic
-from .models import Post
+from django.urls import reverse
+from users.models import User
+from .models import Comment, Post
 
 class PostList(generic.ListView):
     template_name = 'blog/index.html'
@@ -17,6 +19,12 @@ class PostList(generic.ListView):
 class PostDetail(generic.DetailView):
     model = Post
 
+    def get_context_data(self, **kwargs):
+        context = super(PostDetail, self).get_context_data(**kwargs)
+        context['max_attachments'] = 3
+        # add username context variable
+        return context
+
 # TODO: Change CRUD Post actions to Django REST
 
 def delete_post(request, pk): 
@@ -24,6 +32,55 @@ def delete_post(request, pk):
     post.delete()
     # post deleted
     return redirect(reverse('blog:index-blog-view'))
+
+@require_http_methods(['POST'])
+def comment_post(request, pk):
+    username = request.session.get("username", None)
+    if not username:
+        return redirect(reverse("users:login"))
+    
+    user = get_object_or_404(User, username=username)
+    post = get_object_or_404(Post, pk=pk)
+    content = request.POST.get('content', None)
+
+    if not user or not post:
+        return Http404("Given User or post was not found!")
+    
+    elif not content:
+        return HttpResponseBadRequest("The content cannot be null!")
+    
+    comment = Comment()
+    comment.populate_pending_data()
+    comment.post = post
+    comment.user = user
+    comment.content = content
+    comment.save()
+
+    return redirect(reverse("blog:post-detail", args=(pk,)))
+    
+
+
+@require_http_methods(['POST'])
+def upvote_comment(request, pk, comment_pk): # TODO: validate likes by user
+                                             # such that when liked a comment, automatically
+                                             # remove dislike, and viceversa
+    post = get_object_or_404(Post, pk=pk)
+    comment = post.comment_set.get(pk=comment_pk)
+    comment.upvotes += 1
+    comment.save()
+
+    return redirect(reverse("blog:post-detail", args=(pk,)))
+
+
+@require_http_methods(['POST'])
+def downvote_comment(request, pk, comment_pk):
+    post = get_object_or_404(Post, pk=pk)
+    comment = post.comment_set.get(pk=comment_pk)
+    comment.downvotes += 1
+    comment.save()
+
+    return redirect(reverse("blog:post-detail", args=(pk,)))
+
 
 
 

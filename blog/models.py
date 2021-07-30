@@ -64,9 +64,15 @@ class Comment(models.Model):
 
     content = models.TextField()
     datetime = models.DateTimeField()
-    upvotes = models.IntegerField()
-    downvotes = models.IntegerField()
-
+    upvotes = models.IntegerField(default=0, blank=True)
+    downvotes = models.IntegerField(default=0, blank=True)
+    
+    
+    def populate_pending_data(self):
+        """
+        Deletes code repetition by setting basic data automatically
+        """
+        self.datetime = datetime.now()
 
 
 class File(models.Model):
