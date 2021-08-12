@@ -22,12 +22,22 @@
                 {% endif %}
                 <div class="col-md-3">
                     <a>
-                        <img src="{% static 'images/upvote.png' %}" alt="Upvote">
-                        {{ post.upvotes }}
+                        <form id="upvote-post-form-{{ post.post_id }}" class="d-inline" method="POST" action="{% url 'blog:vote-post' post.post_id %}?upvote=True">
+                            {% csrf_token %}
+                            <a href="javascript:;" onclick="document.getElementById('upvote-post-form-{{ post.post_id }}').submit();">
+                                <img src="{% static 'images/upvote.png' %}" alt="Upvote">
+                            </a>
+                        </form>
+                        ({{ post.get_votes.upvotes }})
                     </a>
                     <a>
-                        <img src="{% static 'images/downvote.png' %}" alt="Downvote">
-                        {{ post.downvotes }}
+                        <form id="downvote-post-form-{{ post.post_id }}" class="d-inline" method="POST" action="{% url 'blog:vote-post' post.post_id %}?upvote=False">
+                            {% csrf_token %}
+                            <a href="javascript:;" onclick="document.getElementById('downvote-post-form-{{ post.post_id }}').submit();">
+                                <img src="{% static 'images/downvote.png' %}" alt="Downvote">
+                            </a>
+                        </form>
+                        ({{ post.get_votes.downvotes }})
                     </a> 
                 </div>
             </div>
@@ -73,8 +83,6 @@
             {% with comments=post.comment_set.get_queryset %}
                 {% if comments %}
                     <div class="card m-2 p-3">
-                        <!--Comment container
-                            Foreach comment, represent it in a div-->
                         {% for comment in comments %}
                             <div class="card h-15 m-2">
                                 <div class="container p-1"> 
@@ -85,18 +93,6 @@
                                         <p class="col-md-7">
                                             {{ comment.content }}
                                         </p>
-                                        <div class="col-md-3">
-                                            <a href="{% url 'blog:upvote-comment' post.post_id comment.comment_id %}">
-                                                <img src="{% static 'images/upvote.png' %}" alt="Upvote"
-                                                    height="40" width="40">
-                                            </a>
-                                            ({{ comment.upvotes }})
-                                            <a href="{% url 'blog:downvote-comment' post.post_id comment.comment_id %}">
-                                                <img src="{% static 'images/downvote.png' %}" alt="Downvote"
-                                                    height="40" width="40">
-                                            </a> 
-                                            ({{ comment.downvotes }})
-                                        </div>
                                     </div>
                                 </div>
                             </div>

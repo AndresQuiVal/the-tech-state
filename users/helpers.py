@@ -11,6 +11,45 @@ class UserHelper:
     def __init__(self):
         self.discord_service = DiscordService()
 
+    class Session:
+        """
+        Define helpers for session-related
+        """
+        
+        def is_logged_in(self, request):
+            """
+            Verifies is the user is logged in by the request obj and the cookies
+
+            Returns the complete user object dict if is logged in successfully
+            """
+
+            if not request:
+                raise ValueError('No "request" was passed trough')
+            
+            if not request.session.has_key('access_token'):
+                return False
+            
+            access_token = request.session['access_token'] 
+            user_obj = self.discord_service.get_current_user(access_token) 
+
+            if not user_obj: # TODO: refresh expired access tokens
+                request.session.flush()
+                return False
+            
+            return user_obj
+        
+        def is_logged_in_and_owner(self, request, username):
+            """
+            Validates if the user is logged in and the username matches with the logged-in user
+            """
+            user_obj = self.is_logged_in(request)
+            if not user_obj:
+                return False
+            
+            discord_model = UserDiscordModel.create_user_discord_model(user_obj)
+            return discord_model.complete_username == username
+     
+
     def is_logged_in(self, request):
         """
         Verifies is the user is logged in by the request obj and the cookies
@@ -29,10 +68,6 @@ class UserHelper:
 
         if not user_obj: # TODO: refresh expired access tokens
             request.session.flush()
-            return False
-        
-        if not 'id' in user_obj: # Does response dict returns another info if couldn't get the user correcty? for ensurance 
-                                 # is created such validation
             return False
         
         return user_obj
@@ -96,4 +131,5 @@ class UserHelper:
             return None
         
         return user.first_name != '' and user.last_name != ''
+    
     

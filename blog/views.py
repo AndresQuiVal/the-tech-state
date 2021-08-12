@@ -4,7 +4,7 @@ from django.http.response import Http404, HttpResponseBadRequest
 from django.views import generic
 from django.urls import reverse
 from users.models import User
-from .models import Comment, Post
+from .models import Comment, Post, Vote
 
 class PostList(generic.ListView):
     template_name = 'blog/index.html'
@@ -82,5 +82,19 @@ def downvote_comment(request, pk, comment_pk):
     return redirect(reverse("blog:post-detail", args=(pk,)))
 
 
+@require_http_methods(['POST'])
+def vote_post(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    if not 'username' in request.session:
+        return redirect(reverse("users:login"))
+    
+    username = request.session['username']
+    is_upvoted = request.GET.get('upvote', True)
+    if is_upvoted == 'True':
+        post.get_votes().upvote(username)
+    else:
+        post.get_votes().downvote(username)
+
+    return redirect(reverse('blog:post-detail', args=(pk,)))
 
 

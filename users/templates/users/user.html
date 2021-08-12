@@ -31,6 +31,25 @@
                 </div>
                 <div class="col-md-3"></div>
             </div>
+            <br>
+            <div class="row">
+                <div class="col-md-3"></div>
+                <div class="col-md-3">
+                    <h5>
+                        <a href="{% url 'users:posts' user.username %}?filter=upvoted"><b>Posts you've upvoted: </b></a>
+                        <br>
+                        {{ user.vote_set.number_upvotes }}
+                    </h5>
+                </div>
+                <div class="col-md-3">
+                    <h5>
+                        <a href="{% url 'users:posts' user.username %}?filter=downvoted"><b>Posts you've downvoted: </b></a>
+                        <br>
+                        {{ user.vote_set.number_downvotes }}
+                    </h5>
+                </div>
+                <div class="col-md-3"></div>
+            </div>
         </div>
     </div>
     {% if is_owner %}
