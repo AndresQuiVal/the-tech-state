@@ -180,7 +180,13 @@ class PostsIndex(generic.ListView):
     """
     template_name = "users/post_list.html" # by default searches 'blog/post_list.html' beacuse Post model
                                            # is defined in such application
-                                           
+    title = ''
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = self.title
+        return context
+
     def get_queryset(self):
         username = self.kwargs.get('username', None)
         queryset = []
@@ -195,14 +201,51 @@ class PostsIndex(generic.ListView):
         if filter:
             # evaluate all available filters, NOTE: violates O/C principle
             if filter == "upvoted":
+                self.title = "Posts you've upvoted"
                 queryset = user.vote_set.upvoted_posts
             elif filter == "downvoted":
+                self.title = "Posts you've downvoted"
                 queryset = user.vote_set.downvoted_posts
         else:
+            self.title = "Your posts"
             queryset = Post.objects.filter(user__username=username) 
         
         return queryset # in the template is going to have the name of the model which the
                         # queryset belongs to plus _list, Vote = vote_list 
+
+
+@require_http_methods(['GET'])
+def list_posts(request, username):
+    """
+    Lists the posts based on the querystring parameters
+    """
+    user = get_object_or_404(User, username=username)
+    filter = request.GET.get('filter', None)
+
+    if filter:
+        # evaluate all available filters, NOTE: violates O/C principle
+        if filter == "upvoted":
+            title = "Posts you've upvoted"
+            post_list = user.vote_set.upvoted_posts
+        elif filter == "downvoted":
+            title = "Posts you've downvoted"
+            post_list = user.vote_set.downvoted_posts
+        else:
+            return HttpResponseBadRequest("entered filter was not found")
+        
+        # if its vote_set, then
+        post_list = list(map(lambda x : x.post, post_list))
+    else:
+        title = "Your posts"
+        post_list = Post.objects.filter(user__username=username) 
+    
+    context = {
+        "title" : title,
+        "post_list" : post_list
+    }
+
+    return render(request, 'users/post_list.html', context)
+
 
 def getting_started_view(request, username):
     """
