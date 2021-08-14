@@ -3,7 +3,7 @@
 
 {% block body %}
 <div class="text-center p-5">
-    <img class="rounded-circle" src="{{ user.profile_img }}">
+    <img class="rounded-circle shadow-lg" src="{{ user.profile_img }}">
     <div class="m-5">
         <h4>
             <b>Username: </b>{{ user.username }}
@@ -11,42 +11,51 @@
         <h5>
             <b>Name: </b>{{ user.get_full_name }}
         </h5>
+        <br>
         <div class="container">
-            <br>
             <div class="row">
                 <div class="col-md-3"></div>
-                <div class="col-md-3">
-                    <h5>
-                        <a href="posts/"><b>Posts: </b></a>
+                <div class="col-md-6 card shadow-lg rounded-2 border-0 pt-3 pb-3 mt-3 mb-3">
+                    <div class="container">
                         <br>
-                        {{ user.post_set.get_queryset|length }}
-                    </h5>
-                </div>
-                <div class="col-md-3">
-                    <h5>
-                        <b>Comments: </b>
+                        <div class="row">
+                            <div class="col-md-3"></div>
+                            <div class="col-md-3">
+                                <h5>
+                                    <a href="posts/"><b>Posts </b></a>
+                                    <br>
+                                    {{ user.post_set.get_queryset|length }}
+                                </h5>
+                            </div>
+                            <div class="col-md-3">
+                                <h5>
+                                    <b>Comments </b>
+                                    <br>
+                                    {{ user.comment_set.get_queryset|length }}
+                                </h5>
+                            </div>
+                            <div class="col-md-3"></div>
+                        </div>
                         <br>
-                        {{ user.comment_set.get_queryset|length }}
-                    </h5>
-                </div>
-                <div class="col-md-3"></div>
-            </div>
-            <br>
-            <div class="row">
-                <div class="col-md-3"></div>
-                <div class="col-md-3">
-                    <h5>
-                        <a href="{% url 'users:posts' user.username %}?filter=upvoted"><b>Posts you've upvoted: </b></a>
-                        <br>
-                        {{ user.vote_set.number_upvotes }}
-                    </h5>
-                </div>
-                <div class="col-md-3">
-                    <h5>
-                        <a href="{% url 'users:posts' user.username %}?filter=downvoted"><b>Posts you've downvoted: </b></a>
-                        <br>
-                        {{ user.vote_set.number_downvotes }}
-                    </h5>
+                        <div class="row">
+                            <div class="col-md-3"></div>
+                            <div class="col-md-3">
+                                <h5>
+                                    <a href="{% url 'users:posts' user.username %}?filter=upvoted"><b>Posts you've upvoted </b></a>
+                                    <br>
+                                    {{ user.vote_set.number_upvotes }}
+                                </h5>
+                            </div>
+                            <div class="col-md-3">
+                                <h5>
+                                    <a href="{% url 'users:posts' user.username %}?filter=downvoted"><b>Posts you've downvoted </b></a>
+                                    <br>
+                                    {{ user.vote_set.number_downvotes }}
+                                </h5>
+                            </div>
+                            <div class="col-md-3"></div>
+                        </div>
+                    </div>
                 </div>
                 <div class="col-md-3"></div>
             </div>

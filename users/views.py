@@ -6,7 +6,7 @@ from django.views import generic
 from django.http import Http404, HttpResponseBadRequest
 from .services import DiscordService
 from .helpers import UserHelper
-from .models import UserDiscordModel, User
+from .models import UserDiscordModel, User, UserPostTemplate
 from django.urls import reverse
 from .forms import CompleteNameForm, NewPostForm
 from blog.models import File
@@ -174,35 +174,39 @@ def user_view(request, username): # TODO: validate here the getting_started stat
     return render(request, 'users/user.html', context)
 
 
-class PostsIndex(generic.ListView):
+@require_http_methods(['GET'])
+def list_posts(request, username):
     """
-    Show the posts in index form
+    Lists the posts based on the querystring parameters
     """
-    template_name = "users/post_list.html" # by default searches 'blog/post_list.html' beacuse Post model
-                                           # is defined in such application
-                                           
-    def get_queryset(self):
-        username = self.kwargs.get('username', None)
-        queryset = []
-        if not username:
-            return queryset
+    user = get_object_or_404(User, username=username)
+    filter = request.GET.get('filter', None)
 
-        # check if filters where added
-
-        user = get_object_or_404(User, username=username)
-        filter = self.request.GET.get('filter', None)
-
-        if filter:
-            # evaluate all available filters, NOTE: violates O/C principle
-            if filter == "upvoted":
-                queryset = user.vote_set.upvoted_posts
-            elif filter == "downvoted":
-                queryset = user.vote_set.downvoted_posts
+    if filter:
+        if filter == "upvoted":
+            user_post_template = UserPostTemplate.from_vote_model(
+                "Posts you've upvoted",
+                vote_queryset=user.vote_set.upvoted_posts
+            )
+        elif filter == "downvoted":
+            user_post_template = UserPostTemplate.from_vote_model(
+                "Posts you've downvoted",
+                vote_queryset=user.vote_set.downvoted_posts
+            )
         else:
-            queryset = Post.objects.filter(user__username=username) 
-        
-        return queryset # in the template is going to have the name of the model which the
-                        # queryset belongs to plus _list, Vote = vote_list 
+            return HttpResponseBadRequest("entered filter was not found")
+
+    else:
+        user_post_template = UserPostTemplate(
+            "Your posts", Post.objects.filter(user__username=username) 
+        )
+    
+    context = {
+        "user_post_template" : user_post_template
+    }
+
+    return render(request, 'users/post_list.html', context)
+
 
 def getting_started_view(request, username):
     """

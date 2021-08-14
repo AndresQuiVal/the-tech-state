@@ -46,13 +46,33 @@ class UserDiscordModel:
         return user_discord
 
 
+class UserPostTemplate:
+
+    def __init__(self, title, post_list):
+        self.title = title
+        self.post_list = post_list
+    
+    @classmethod
+    def from_vote_model(cls, title, vote_queryset):
+        """
+        Create a UserPostTemplate model from a vote queryset
+        """
+        post_list = list(map(lambda e : e.post, vote_queryset))
+        return UserPostTemplate(
+            title=title,
+            post_list=post_list
+        )
+
+
 class ResponseModel:
     """
     Model used for responses in services
     """
 
     def __init__(self, succeed, message, response_content):
-        self.succeed, self.message, self.response_content = succeed, message, response_content
+        self.succeed =  succeed
+        self.message = message
+        self.response_content = response_content
     
     
 
