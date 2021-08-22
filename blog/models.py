@@ -146,18 +146,27 @@ class Comment(models.Model):
     comment_id = models.AutoField(primary_key=True)
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-
     
     content = models.TextField()
     datetime = models.DateTimeField()
     upvotes = models.IntegerField(default=0, blank=True)
     downvotes = models.IntegerField(default=0, blank=True)
-    
+    comment_replied = models.ForeignKey("self", on_delete=models.CASCADE, 
+                                        blank=True, null=True, related_name="replies")
+
     def populate_pending_data(self):
         """
         Deletes code repetition by setting basic data automatically
         """
         self.datetime = datetime.now()
+    
+    
+    def is_reply(self):
+        """
+        Validates if the current comment is a reply based on the 
+        comment_replied field value
+        """
+        return bool(self.comment_replied)
 
 
 class File(models.Model):

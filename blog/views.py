@@ -34,7 +34,11 @@ def delete_post(request, pk):
     return redirect(reverse('blog:index-blog-view'))
 
 @require_http_methods(['POST'])
-def comment_post(request, pk):
+def comment(request, pk, comment_pk = -1):
+    """
+    Comments either a post or a comment
+    NOTE: only admits commenting a single comment
+    """
     username = request.session.get("username", None)
     if not username:
         return redirect(reverse("users:login"))
@@ -43,10 +47,7 @@ def comment_post(request, pk):
     post = get_object_or_404(Post, pk=pk)
     content = request.POST.get('content', None)
 
-    if not user or not post:
-        return Http404("Given User or post was not found!")
-    
-    elif not content:
+    if not content:
         return HttpResponseBadRequest("The content cannot be null!")
     
     comment = Comment()
@@ -54,6 +55,15 @@ def comment_post(request, pk):
     comment.post = post
     comment.user = user
     comment.content = content
+    
+    if comment_pk != -1:
+        comment_replied = get_object_or_404(Comment, pk=comment_pk)
+        if comment_replied.is_reply():
+            # users shouldn't reply a comment
+            return HttpResponseBadRequest("Reply comment cannot be replied again. ")
+
+        comment.comment_replied = comment_replied
+
     comment.save()
 
     return redirect(reverse("blog:post-detail", args=(pk,)))

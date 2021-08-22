@@ -46,6 +46,11 @@
             <h2 class="text-center">
                 {{ post.title }}
             </h2>
+            <p class="text-center">
+                by <a href="{% url 'users:user-view' post.user.username %}">
+                    {{ post.user.username }}
+                    </a>
+            </p>
             <br>
             <div class="card m-2 p-3">
                 <p>
@@ -72,11 +77,16 @@
             <h4>
                 Comments
             </h4>
-            <form method="POST" action="{% url 'blog:comment-post' post.post_id %}">
+            <p id='comment-help-text' class="d-none">
+            </p>
+            <form id='post-comment-form' method="POST" action="{% url 'blog:comment-post' post.post_id %}">
                 {% csrf_token %}
                 <div class="container">
                     <textarea name="content" rows="3" class="col-md-9 align-middle"></textarea>
-                    <input type="submit" class="col-md-2" value="Post comment">
+                    <!-- <input id='post-input-submit-btn' type="submit" class="col-md-2" value="Post comment"> -->
+                    <button class="btn btn-primary" onclick="postComment({{ post.post_id }})">
+                        Post comment
+                    </button>
                 </div>
             </form>
             <br>
@@ -84,22 +94,79 @@
                 {% if comments %}
                     <div class="card m-2 p-3">
                         {% for comment in comments %}
-                            <div class="card h-15 m-2">
-                                <div class="container p-1"> 
-                                    <div class="row m-2">
-                                        <img class="rounded-circle mr-2" 
-                                            src="{{ comment.user.profile_img }}"
-                                            height="60" width="60">
-                                        <p class="col-md-7">
-                                            {{ comment.content }}
-                                        </p>
+                            {% if not comment.is_reply %}
+                                <div class="card h-15 m-2">
+                                    <div class="container p-1"> 
+                                        <div class="row m-2">
+                                            <a href="{% url 'users:user-view' comment.user.username %}">
+                                                <img class="rounded-circle mr-2" 
+                                                src="{{ comment.user.profile_img }}"
+                                                height="60" width="60">
+                                            </a>
+                                            
+                                            <div class="column col-md-9">
+                                                <small class="row-md-2">
+                                                    {{ comment.user.username }}
+                                                </small>
+                                                <p>
+                                                    {{ comment.content }}
+                                                </p>
+                                            </div>
+                                            <button class="btn btn-light" id='{{ comment.comment_id }}' onclick="replyComment(this)">
+                                                Reply
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                                {% for reply in comment.replies.get_queryset %}
+                                    <div class="card h-15 m-2 ml-5">
+                                        <div class="container p-1"> 
+                                            <div class="row m-2">
+                                                <a href="{% url 'users:user-view' reply.user.username %}">
+                                                    <img class="rounded-circle mr-2" 
+                                                        src="{{ reply.user.profile_img }}"
+                                                        height="60" width="60">
+                                                </a>
+                                                <div class="column col-md-9">
+                                                    <small class="row-md-2">
+                                                        {{ reply.user.username }}
+                                                    </small>
+                                                    <p>
+                                                        {{ reply.content }}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
                         {% endfor %}
                     </div>
                 {% endif %}
             {% endwith %}
         </div>
     </div>
+    <script>
+        var commentId = -1; // holds the comment id if we are replying to comment
+        var replyComment = function(elem) {
+            commentId = elem.id
+            commentHelpTextPTag = document.getElementById('comment-help-text');
+            if (commentHelpTextPTag.classList.contains('d-none')) {
+                commentHelpTextPTag.classList.remove('d-none')
+            }
+            commentHelpTextPTag.innerHTML = `Replying to comment with id: ${commentId}`;
+        }
+
+        var postComment = function(postId) {
+            commentForm = document.getElementById('post-comment-form')
+            if (commentId != -1) {
+                // replying a comment
+                let fullSubmitUrl = "{% url 'blog:reply-comment' 0 0 %}";
+                fullSubmitUrl = fullSubmitUrl.replace('0', postId);
+                fullSubmitUrl = fullSubmitUrl.replace('/0', `/${commentId}`);
+                commentForm.action = fullSubmitUrl;
+            }
+            commentForm.submit()
+        }
+    </script>
 {% endblock %}

@@ -22,11 +22,17 @@ class UserDiscordModel:
         self.id = id
         self.username = username
         self.discriminator = discriminator
-        self._img_hash = avatar
-        self.email = email
 
+        if avatar is None: # no discord avatar available; select default profile image
+            self._img_hash = 'media/default_profile_image.png'
+            self.avatar_url = f'http://127.0.0.1:8000/{self._img_hash}'
+        else:
+            self._img_hash = avatar
+            self.avatar_url = f'https://cdn.discordapp.com/avatars/{self.id}/{self._img_hash}'
+        
+        self.email = email
         self.complete_username = username + discriminator
-        self.avatar_url = f'https://cdn.discordapp.com/avatars/{self.id}/{self._img_hash}'
+
 
     
     @classmethod

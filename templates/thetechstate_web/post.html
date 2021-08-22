@@ -8,6 +8,8 @@
         <p class="card-text">
             {{ post.summary }}
         </p>
+        <small><i>By <b>{{ post.user.username }}</b></i></small>
+        <br>
         <a href="{% url 'blog:post-detail' post.post_id %}" class="card-link">
             See full post
         </a>
