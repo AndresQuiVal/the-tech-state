@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'users.apps.UsersConfig',
     'blog.apps.BlogConfig',
-    'bootstrap4'
+    'bootstrap4',
+    'mathfilters'
 ]
 
 MIDDLEWARE = [

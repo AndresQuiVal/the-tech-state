@@ -27,7 +27,7 @@ class PostDetail(generic.DetailView):
 
 # TODO: Change CRUD Post actions to Django REST
 
-def delete_post(request, pk): 
+def delete_post(request, pk):
     post = get_object_or_404(Post, pk=pk)
     post.delete()
     # post deleted

@@ -11,7 +11,7 @@ import uuid
 class VoteManager(models.Manager):
 
     def _get_votes_by_upvoted(self, is_upvoted):
-        return super().get_queryset().filter(is_upvoted=is_upvoted)
+        return super().select_related('user').filter(is_upvoted=is_upvoted)
     
     @property
     def number_upvotes(self):
@@ -55,10 +55,13 @@ class Post(models.Model):
         
     title = models.CharField(max_length=100)
     content = models.TextField(max_length=1000)
-    summary = models.CharField(max_length=50)
     datetime = models.DateTimeField()
     votes = models.ManyToManyField(User, related_name="voted_posts",
                                          through='Vote')
+
+    @property
+    def summary(self):
+        return f"{self.content[:50]}..."
 
     votes_ins = None
 
@@ -105,7 +108,6 @@ class Post(models.Model):
         Deletes code repetition by setting basic data automatically
         """
         self.datetime = datetime.now()
-        self.summary = str(self.content)[:50]
 
 
     def save(self, *args, **kwargs):
@@ -127,12 +129,13 @@ class Post(models.Model):
 
 class Vote(models.Model):
 
-    objects = VoteManager()
-
     # compound key
     post = models.ForeignKey(Post, on_delete=models.CASCADE) 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
+    # model manager
+    objects = VoteManager()
+    
     # related fields
     is_upvoted = models.BooleanField(default=True)
 
