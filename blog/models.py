@@ -30,9 +30,6 @@ class VoteManager(models.Manager):
         return self._get_votes_by_upvoted(False)
 
 
-
-
-
 def upload_to(instance, filename):
     filename = str(uuid.uuid4())
     return '%s/%s' %(instance.post.user.username, filename)
