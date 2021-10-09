@@ -51,6 +51,11 @@
                 by <a href="{% url 'users:user-view' post.user.username %}">
                     {{ post.user.username }}
                     </a>
+                    <div class="d-flex justify-content-center">
+                        <div class="rounded p-1 text-center shadow w-10 bg-warning">
+                            {{ post.section }}
+                        </div>
+                    </div>
             </p>
             <br>
             <div class="card m-2 p-3">

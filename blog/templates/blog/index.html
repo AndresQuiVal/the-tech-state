@@ -1,7 +1,20 @@
 {% extends 'base.html' %}
 
 {% block body %}
+    <div class="ml-3 mt-3">
+        <div>
+            <h2 class="d-inline">
+                {{ section }}
+            </h2>
+            &nbsp;
+            <div class="bg-warning rounded-right d-inline align-self-center">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            </div>
+            <br>
+        </div>
+    </div>
     <div class="d-flex flex-wrap justify-content-center">
+        <br>
         {% if post_list %}
             {% for post in post_list %}
                 {% if username != None and username == post.user.username %}

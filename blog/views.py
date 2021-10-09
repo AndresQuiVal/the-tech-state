@@ -1,21 +1,44 @@
-from django.shortcuts import get_object_or_404, redirect, render
+from django.db.models import query
+from django.shortcuts import get_object_or_404, get_list_or_404, redirect
 from django.views.decorators.http import require_http_methods
-from django.http.response import Http404, HttpResponseBadRequest
+from django.http.response import HttpResponseBadRequest
 from django.views import generic
 from django.urls import reverse
+from requests.api import post
 from users.models import User
-from .models import Comment, Post, Vote
+from .models import Comment, Post
 
 class PostList(generic.ListView):
     template_name = 'blog/index.html'
-    queryset = Post.objects.all()
+    section = "Feed"
+
+    def get_queried_or_all(self, ):
+        pass
 
     def get_context_data(self, **kwargs):
+        global section
         context = super(PostList, self).get_context_data(**kwargs)
         context['username'] = self.request.session.get('username', None)
+        context['section'] = section
         # add username context variable
         return context
+    
+    def get_queryset(self):
+        global section
+        section = self.request.GET.get('section', '')
+        search = self.request.GET.get('searchTerm', '')
 
+        if section:
+            section = section.lower()
+            queryset = Post.objects.filter(section=section)
+        else:
+            section = "Feed"
+            queryset = Post.objects.all()
+
+        # apply search term
+
+        return queryset.filter(title__icontains=search) | queryset.filter(content__icontains=search)
+        
 class PostDetail(generic.DetailView):
     model = Post
 
@@ -67,7 +90,6 @@ def comment(request, pk, comment_pk = -1):
     comment.save()
 
     return redirect(reverse("blog:post-detail", args=(pk,)))
-    
 
 
 @require_http_methods(['POST'])

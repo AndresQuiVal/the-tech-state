@@ -42,13 +42,13 @@ class Post(models.Model):
     post_id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
-    section = models.PositiveIntegerField(
+    section = models.CharField(
         choices=(
-            (1, "Codigo"),
-            (2, "Diseño"),
-            (3, "Blockchain"),
-            (4, "Emprendimiento")
-        ))
+            ("code", "Codigo"),
+            ("design", "Diseño"),
+            ("blockchain", "Blockchain"),
+            ("entrepreneurship", "Emprendimiento")
+        ), max_length=50)
         
     title = models.CharField(max_length=100)
     content = models.TextField(max_length=1000)
