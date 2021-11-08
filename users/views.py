@@ -201,8 +201,10 @@ def list_posts(request, username):
             "Your posts", Post.objects.filter(user__username=username) 
         )
     
+    user_helper = UserHelper()
     context = {
-        "user_post_template" : user_post_template
+        "user_post_template" : user_post_template,
+        "user" : user_helper.get_user_logged_in(request)
     }
 
     return render(request, 'users/post_list.html', context)

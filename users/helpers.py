@@ -49,6 +49,16 @@ class UserHelper:
             discord_model = UserDiscordModel.create_user_discord_model(user_obj)
             return discord_model.complete_username == username
      
+    def get_user_logged_in(self, request):
+        """
+        Returns a UserDiscordModel instance of the user currently logged-in
+        for cases where the access token is correct, else raises exception
+        """
+        user_obj = self.is_logged_in(request)
+        if not user_obj:
+            raise ValueError("Expired or not provided access token")
+        
+        return UserDiscordModel.create_user_discord_model(user_obj)
 
     def is_logged_in(self, request):
         """

@@ -12,7 +12,11 @@
     <div class="d-flex flex-wrap justify-content-center">
         {% if user_post_template.post_list %}
             {% for post in user_post_template.post_list %}
-                {% include 'post.html' with is_owner=True %}
+                {% if post.user.username == user.complete_username %}
+                    {% include 'post.html' with is_owner=True %}
+                {% else %}
+                    {% include 'post.html' %}
+                {% endif %}
             {% endfor %}
         {% else %}
             <div>

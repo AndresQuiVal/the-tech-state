@@ -1,10 +1,11 @@
 from django.db.models import query
 from django.shortcuts import get_object_or_404, get_list_or_404, redirect
 from django.views.decorators.http import require_http_methods
-from django.http.response import HttpResponseBadRequest
+from django.http.response import Http404, HttpResponseBadRequest
 from django.views import generic
 from django.urls import reverse
 from requests.api import post
+from users.helpers import UserHelper
 from users.models import User
 from .models import Comment, Post
 
@@ -52,6 +53,11 @@ class PostDetail(generic.DetailView):
 
 def delete_post(request, pk):
     post = get_object_or_404(Post, pk=pk)
+    user_logged_in = UserHelper().get_user_logged_in(request)
+
+    if user_logged_in.complete_username != post.user.username:
+        return HttpResponseBadRequest("Cannot delete other's posts")
+        
     post.delete()
     # post deleted
     return redirect(reverse('blog:index-blog-view'))
