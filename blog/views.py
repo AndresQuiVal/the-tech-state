@@ -1,10 +1,8 @@
-from django.db.models import query
 from django.shortcuts import get_object_or_404, get_list_or_404, redirect
 from django.views.decorators.http import require_http_methods
 from django.http.response import Http404, HttpResponseBadRequest
 from django.views import generic
 from django.urls import reverse
-from requests.api import post
 from users.helpers import UserHelper
 from users.models import User
 from .models import Comment, Post
@@ -12,9 +10,6 @@ from .models import Comment, Post
 class PostList(generic.ListView):
     template_name = 'blog/index.html'
     section = "Feed"
-
-    def get_queried_or_all(self, ):
-        pass
 
     def get_context_data(self, **kwargs):
         global section
@@ -38,7 +33,7 @@ class PostList(generic.ListView):
 
         # apply search term
 
-        return queryset.filter(title__icontains=search) | queryset.filter(content__icontains=search)
+        return queryset.filter(title__icontains=search) | queryset.filter(user__username__icontains=search)
         
 class PostDetail(generic.DetailView):
     model = Post
