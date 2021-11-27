@@ -4,7 +4,7 @@
     <div class="m-2 p-2">
         {% if user_post_template.title %}
             <h3>
-                {{ user_post_template.title }}
+                {{ user_post_template.title|capfirst }}
             </h3>
             <hr>
         {% endif %}

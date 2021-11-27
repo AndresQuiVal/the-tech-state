@@ -10,6 +10,7 @@ urlpatterns = [
     main_path,
     path('posts/<int:pk>', views.PostDetail.as_view(), name = 'post-detail'),
     path('posts/<int:pk>/delete', views.delete_post, name = 'post-delete'),
+    path('posts/<int:pk>/edit', views.edit_post, name = 'post-edit'),
     path('posts/<int:pk>/comment/', views.comment, name = 'comment-post'),
     path('posts/<int:pk>/comment/<int:comment_pk>/upvote', views.upvote_comment, name = 'upvote-comment'),
     path('posts/<int:pk>/comment/<int:comment_pk>/downvote', views.downvote_comment, name = 'downvote-comment'),

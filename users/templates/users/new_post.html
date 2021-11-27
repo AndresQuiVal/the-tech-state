@@ -3,10 +3,9 @@
 {% block body %}
 <div class="card m-5">
     <div class="card-body text-center">
-        <h4>Nuevo post</h4>
+        <h4>New post</h4>
         <small>
-            <i>Recuerda, un post tiene contenido legible, busca la forma de atraer
-            la atenci&oacute;n de tus lectores</i>
+            <i>Remember, a post has readable content, find a way to attract the attention of your readers</i>
         </small> 
         <br>
         <br>
@@ -24,14 +23,14 @@
             <p>
                 {{ post_form.content }}
             </p>
-            <label for="post-files">Archivos</label>
+            <label for="post-files">Files</label>
             <p>
                 <input id="post-files" type="file" name="post-files" multiple>
             </p>
             <br>
             {{ post_form.errors }}
             <br>
-            <input class="btn btn-primary" type="submit" value="Publicar">
+            <input class="btn btn-primary" type="submit">
         </form>
     </div>
 </div>

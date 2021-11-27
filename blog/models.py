@@ -44,10 +44,10 @@ class Post(models.Model):
 
     section = models.CharField(
         choices=(
-            ("code", "Codigo"),
-            ("design", "Diseño"),
+            ("code", "Code"),
+            ("design", "Design"),
             ("blockchain", "Blockchain"),
-            ("entrepreneurship", "Emprendimiento")
+            ("entrepreneurship", "Entrepreneurship")
         ), max_length=50)
         
     title = models.CharField(max_length=100)

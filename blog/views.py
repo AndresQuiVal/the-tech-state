@@ -57,6 +57,16 @@ def delete_post(request, pk):
     # post deleted
     return redirect(reverse('blog:index-blog-view'))
 
+def edit_post(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    user_logged_in = UserHelper().get_user_logged_in(request)
+
+    if user_logged_in.complete_username != post.user.username:
+        return HttpResponseBadRequest("Cannot edit other's posts")
+    
+    # post deleted
+    return redirect(reverse('blog:index-blog-view'))
+
 @require_http_methods(['POST'])
 def comment(request, pk, comment_pk = -1):
     """
