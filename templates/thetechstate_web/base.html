@@ -61,9 +61,8 @@
         </main> 
         <footer>
             <div class="footer">
-                {% comment %}
-                    Here goes the footer
-                {% endcomment %}
+                {% block footer %}
+                {% endblock %}
             </div>
         </footer>
         {% bootstrap_javascript jquery='full' %}

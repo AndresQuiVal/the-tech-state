@@ -1,26 +1,31 @@
 from django.shortcuts import get_object_or_404, get_list_or_404, redirect
-from django.views.decorators.http import require_http_methods
 from django.http.response import Http404, HttpResponseBadRequest
+from django.views.decorators.http import require_http_methods
+from django.core.paginator import Paginator
+from users.helpers import UserHelper
+from .models import Comment, Post
 from django.views import generic
 from django.urls import reverse
-from users.helpers import UserHelper
 from users.models import User
-from .models import Comment, Post
 
 class PostList(generic.ListView):
     template_name = 'blog/index.html'
     section = "Feed"
-
+    paginator = None
+ 
     def get_context_data(self, **kwargs):
         global section
         context = super(PostList, self).get_context_data(**kwargs)
         context['username'] = self.request.session.get('username', None)
         context['section'] = section
-        # add username context variable
+
+        page_obj = paginator.get_page(self.request.GET.get('page','1'))
+        context['page_obj'] = page_obj
+            
         return context
     
     def get_queryset(self):
-        global section
+        global section, paginator
         section = self.request.GET.get('section', '')
         search = self.request.GET.get('searchTerm', '')
 
@@ -31,10 +36,13 @@ class PostList(generic.ListView):
             section = "Feed"
             queryset = Post.objects.all()
 
-        # apply search term
+        # apply search termn
+        queryset = queryset.filter(title__icontains=search) | queryset.filter(user__username__icontains=search)
+        # apply pagination
+        paginator = Paginator(queryset, 25)
 
-        return queryset.filter(title__icontains=search) | queryset.filter(user__username__icontains=search)
-        
+        return queryset
+
 class PostDetail(generic.DetailView):
     model = Post
 
