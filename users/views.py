@@ -32,6 +32,19 @@ def validate_if_new_user(func): # decorator
     
     return wrapper
 
+def is_logged_in(func): # decorator
+
+    def wrapper(*args, **kwargs):
+        user_helper = UserHelper()
+        request = kwargs.get('request', None)
+
+        if not user_helper.is_logged_in(request):
+            return render(request, 'users/login.html', {})
+        
+        return func(*args, **kwargs)
+    
+    return wrapper
+
 
 def login_view(request):
     """
@@ -79,6 +92,7 @@ def login_view(request):
 
 
 @require_http_methods(['POST'])
+@is_logged_in
 def logout_view(request, username):
     """
     Logs out from the page
@@ -99,6 +113,7 @@ def logout_view(request, username):
 
 @require_http_methods(["GET", "POST"])
 @validate_if_new_user
+@is_logged_in
 def new_post(request, username):
     """
     Redirects to the new-post template
@@ -144,6 +159,7 @@ def new_post(request, username):
 
 
 @validate_if_new_user
+@is_logged_in
 def user_view(request, username): # TODO: validate here the getting_started status of the user!!!
     """
     Redirects to the user view; if the user is the owner, enables edition permissions
@@ -175,6 +191,7 @@ def user_view(request, username): # TODO: validate here the getting_started stat
 
 
 @require_http_methods(['GET'])
+@is_logged_in
 def list_posts(request, username):
     """
     Lists the posts based on the querystring parameters
@@ -209,7 +226,7 @@ def list_posts(request, username):
 
     return render(request, 'users/post_list.html', context)
 
-
+@is_logged_in
 def getting_started_view(request, username):
     """
     Redirects the template getting_started.html if its user's first time

@@ -11,7 +11,8 @@ class DiscordService:
     API_ENDPOINT = 'https://discord.com/api/v8'
     CLIENT_ID = '833554127652519957'
     CLIENT_SECRET = 'BCL-y0K563MiTX_FRqeHhgXgYiurqoeI'
-    REDIRECT_URI = 'https://thetechstate.herokuapp.com/users/login'
+    REDIRECT_URI_PRODUCTION = 'https://thetechstate.herokuapp.com/users/login'
+    REDIRECT_URI_TEST = 'http://127.0.0.1:8000/users/login'
 
     def get_token_object(self, code):
         """
@@ -22,7 +23,7 @@ class DiscordService:
             'client_secret': self.CLIENT_SECRET,
             'grant_type': 'authorization_code',
             'code': code,
-            'redirect_uri': self.REDIRECT_URI
+            'redirect_uri': self.REDIRECT_URI_PRODUCTION
         }
         
         headers = {
