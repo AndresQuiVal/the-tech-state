@@ -36,8 +36,10 @@ def is_logged_in(func): # decorator
 
     def wrapper(*args, **kwargs):
         user_helper = UserHelper()
-        request = kwargs.get('request', None)
+        if len(args) < 1:
+            raise HttpResponseBadRequest("Method called from no django view (no request object found)")
 
+        request = args[0] # WSGI request obj
         if not user_helper.is_logged_in(request):
             return render(request, 'users/login.html', {})
         
@@ -158,8 +160,8 @@ def new_post(request, username):
     return render(request, 'users/new_post.html', context)
 
 
-@validate_if_new_user
 @is_logged_in
+@validate_if_new_user
 def user_view(request, username): # TODO: validate here the getting_started status of the user!!!
     """
     Redirects to the user view; if the user is the owner, enables edition permissions
