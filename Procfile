@@ -1,0 +1,1 @@
+web: gunicorn thetechstate_web.wsgi
